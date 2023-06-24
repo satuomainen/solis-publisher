@@ -1,6 +1,7 @@
 # Go parameters
 GO=go
-GOFLAGS=-ldflags="-s -w"
+# GOFLAGS=-ldflags="-s -w"
+GOFLAGS=
 
 # Directories
 CMD_DIR=./cmd
@@ -17,7 +18,7 @@ all: $(BUILD_TARGETS)
 # Build target for each directory
 $(BUILD_TARGETS): build-%:
 	@echo "Building $*..."
-	@$(GO) build $(GOFLAGS) -o out/$* ./$*
+	GOOS=linux GOARCH=amd64 CGO_ENABLED=0 $(GO) build $(GOFLAGS) -o out/$* ./$*
 
 .PHONY: all $(BUILD_TARGETS)
 

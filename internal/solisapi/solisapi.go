@@ -7,6 +7,7 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
+	"github.com/rs/zerolog/log"
 	"io"
 	"net/http"
 	"strings"
@@ -16,9 +17,12 @@ import (
 const jsonBody = "{\"pageNo\":1,\"pageSize\":10}"
 const jsonBodyMD5 = "kxdxk7rbAsrzSIWgEwhH4w=="
 
-func FetchProduction(config *SolisConfig) (*string, error) {
-	if !IsValid(config) {
-		return nil, fmt.Errorf("valid config must be provided")
+// FetchProduction contacts the Solis API and get the current power yield that
+// the inverter's data logger has provided the Solis backend
+func FetchProduction() (*float32, error) {
+	config, err := GetSolisApiConfig()
+	if err != nil {
+		return nil, err
 	}
 
 	// Get list of user's stations
@@ -28,9 +32,16 @@ func FetchProduction(config *SolisConfig) (*string, error) {
 	}
 
 	// Select the first station, a normal small house would only have the one station
+	if len(stationList.Data.Page.Records) < 1 {
+		return nil, fmt.Errorf("no power stations found from the given Solis account")
+	}
 	station := stationList.Data.Page.Records[0]
+	power := station.Power
 
-	power := fmt.Sprintf("%f", station.Power)
+	log.Info().
+		Float32("power", power).
+		Str("stationId", station.Id).
+		Msg("Successfully fetched current power yield from the first station")
 
 	return &power, nil
 }

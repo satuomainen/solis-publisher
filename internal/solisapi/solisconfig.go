@@ -1,8 +1,7 @@
 package solisapi
 
 import (
-	"fmt"
-	"os"
+	"solis-publisher/internal/util"
 	"strings"
 )
 
@@ -13,17 +12,17 @@ type SolisConfig struct {
 }
 
 func GetSolisApiConfig() (*SolisConfig, error) {
-	apiId, err := lookupEnv("SOLISAPI_ID")
+	apiId, err := util.LookupEnv("SOLISAPI_ID")
 	if err != nil {
 		return nil, err
 	}
 
-	apiSecret, err := lookupEnv("SOLISAPI_SECRET")
+	apiSecret, err := util.LookupEnv("SOLISAPI_SECRET")
 	if err != nil {
 		return nil, err
 	}
 
-	url, err := lookupEnv("SOLISAPI_URL")
+	url, err := util.LookupEnv("SOLISAPI_URL")
 	if err != nil {
 		return nil, err
 	}
@@ -55,13 +54,4 @@ func IsValid(config *SolisConfig) bool {
 	}
 
 	return true
-}
-
-func lookupEnv(key string) (*string, error) {
-	val, ok := os.LookupEnv(key)
-	if !ok {
-		return nil, fmt.Errorf("no value for %s", key)
-	}
-
-	return &val, nil
 }

@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"github.com/rs/zerolog/log"
 	"os"
 	"solis-publisher/internal/solisapi"
 )
@@ -9,16 +10,11 @@ import (
 // main function for fetch_production connects to the Solis API and fetches the
 // current power production in kWh
 func main() {
-	config, err := solisapi.GetSolisApiConfig()
+	production, err := solisapi.FetchProduction()
 	if err != nil {
-		fmt.Println("solis-publisher/fetch_production: Configuration error", err)
+		log.Fatal().Err(err).Msg("Failed to fetch current power yield from Solis API")
 		os.Exit(1)
 	}
 
-	production, err := solisapi.FetchProduction(config)
-	if err != nil {
-		fmt.Println("solis-publisher/fetch_production: API error", err)
-	}
-
-	fmt.Printf("%s", *production)
+	fmt.Printf("%f", *production)
 }

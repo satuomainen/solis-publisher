@@ -13,5 +13,6 @@ type StationListPage struct {
 }
 
 type Station struct {
+	Id    string  `json:"id"`
 	Power float32 `json:"power"`
 }
