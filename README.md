@@ -11,8 +11,6 @@ logger.
 
 ```mermaid
 C4Deployment
-    title solis-publisher
-
     Deployment_Node(controlService, "Controller", "My hobby server") {
         Container(updateCurrentPower, "update_current_power", "Cron Job")
 
