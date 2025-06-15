@@ -56,3 +56,19 @@ than 5 minutes.
 
 * Turn loads on/off based on the amount of power generated
 * Graph the energy yield over time (Solis Cloud already does this)
+
+## How I use it
+
+I have a cron job that runs the `update_current_power` program during summer months
+and during hours when it's even possible to have solar production. This excludes the
+dark winter period between the beginning of November and the end of February. The
+nighttime hours during the non-winter months is also excluded. The current power
+production gets published to an MQTT topic every 5 minutes.
+
+In my house I have a Shelly Pro 1 smart relay that can subscribe to MQTT topics and
+run simple scripts. I run a script that turns on the water heater if the production
+exceeds a threshold value. This way I can use as much of the solar energy produced
+locally and save it a little bit as heat energy.
+
+For a belt-and-braces safety I also run the `publish` command every night after the
+active period has ended to publish a zero value.
