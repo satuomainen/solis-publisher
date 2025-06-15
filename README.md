@@ -9,6 +9,45 @@ them in the Solis Cloud system. Data from the Solis Cloud can be read using
 the Solis API with API keys associated to the registered owner of the data
 logger.
 
+```mermaid
+C4Deployment
+    title solis-publisher
+
+    Deployment_Node(controlService, "Controller", "My hobby server") {
+        Container(updateCurrentPower, "update_current_power", "Cron Job")
+
+        Rel(updateCurrentPower, solisCloud, "Fetch current power production and publish it to MQTT topic")
+        Rel(updateCurrentPower, mqttTopic, "Publish current power production", "yieldkw")
+
+        UpdateRelStyle(updateCurrentPower, mqttTopic, $offsetX="-45")
+        UpdateRelStyle(updateCurrentPower, solisCloud, $offsetX="-45", $offsetY="15")
+    }
+
+    Deployment_Node(solisBoundary, "Solis", "Solis inverter HW and services") {
+        Container(solisInverter, "Inverter", "Solar power inverter")
+        Container(solisLogger, "Datalogger", "Serial device")
+        Container(solisCloud, "Solis Cloud", "Cloud-based solar data service")
+
+        Rel(solisLogger, solisInverter, "Collect data")
+        Rel(solisLogger, solisCloud, "Send readings")
+    }
+
+    Deployment_Node(mqttCloud, "MQTT Broker Service", "") {
+        Container(mqttTopic, "MQTT Topic", "yieldkw")
+    }
+
+    Deployment_Node(shellyRelay, "Shelly Pro 1", "Smart Relay") {
+        Container(internalMqttClient, "Internal MQTT client")
+        Container(runWhenSunny, "Script", "Control loads MQTT value")
+
+        Rel(internalMqttClient, runWhenSunny , "MQTT values")
+        Rel(internalMqttClient, mqttTopic, "Subscribe", "yieldkw")
+
+        UpdateRelStyle(internalMqttClient, mqttTopic, $offsetX="-35", $offsetY="10")
+        UpdateRelStyle(internalMqttClient, runWhenSunny, $offsetX="-40", $offsetY="-15")
+    }
+```
+
 ## Intended operation
 
 This module provides a command line tool that can be periodically run for
